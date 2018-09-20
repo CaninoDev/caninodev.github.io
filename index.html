@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>The Mishaps of A Wandering Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="A personal journal of happy accidents, oddities, and avocado tastings.">
+<meta name="keywords" content="blog javascript react developer dev programming">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Mishaps of A Wandering Developer">
+<meta property="og:url" content="http://caninodev.github.io/index.html">
+<meta property="og:site_name" content="The Mishaps of A Wandering Developer">
+<meta property="og:description" content="A personal journal of happy accidents, oddities, and avocado tastings.">
+<meta property="og:locale" content="english">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Mishaps of A Wandering Developer">
+<meta name="twitter:description" content="A personal journal of happy accidents, oddities, and avocado tastings.">
+  
+    <link rel="alternate" href="/atom.xml" title="The Mishaps of A Wandering Developer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">The Mishaps of A Wandering Developer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">I am never lost, I am where I want to be even when I don&#39;t know it</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://caninodev.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-A-Stately-Examination" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/A-Stately-Examination/" class="article-date">
+  <time datetime="2018-09-20T21:44:00.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/A-Stately-Examination/">A Stately Examination</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="A-Stately-Examination-on-the-Lifecycle-of-React-Component"><a href="#A-Stately-Examination-on-the-Lifecycle-of-React-Component" class="headerlink" title="A Stately Examination on the Lifecycle of React Component"></a>A Stately Examination on the Lifecycle of React Component</h1><p><img src="https://i.imgur.com/SzwqqxZ.png" alt="SzwqqxZ.png"></p>
+<hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Recently was working on a project and came across a situation where some pre-render manipulation of props were required. Ordinarily this would be handled via <code>componentWillReceiveProps</code>. However the React team decided to deprecate this function and, in its place, for very rare circumstances, <code>getDerivedStatesFromProps</code> was provided in React 16. However there is some <a href="https://stackoverflow.com/questions/49617486/how-to-use-lifecycle-method-getderivedstatefromprops-as-opposed-to-componentwill" target="_blank" rel="noopener">confusion</a> and <a href="https://github.com/reactjs/reactjs.org/issues/721" target="_blank" rel="noopener">concerns</a> as to how it was meant to be used. The following is a concrete use case on the usage of this functionality, and in addition to the <a href="https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html" target="_blank" rel="noopener">guidelines</a> and <a href="https://reactjs.org/blog/2018/03/27/update-on-async-rendering.html#fetching-external-data-when-props-change" target="_blank" rel="noopener">examples</a> provided by the team, may prove helpful in further understanding.</p>
+<hr>
+<p><img src="https://i.kym-cdn.com/entries/icons/original/000/000/908/pac_man_pie_chart.jpg" alt="pac_man_pie_chart.jpg"></p>
+<h2 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h2><p>In my project, I wanted to render a chart that would provide certain aggregate calculations on two data points. However, one data point was dependant on user input and, ideally, the chart should render the other data point. The situation was further complicated by a specific data format that must be fed into the React component rendering the chart. In this particular project, <a href="http://nivo.rocks/" target="_blank" rel="noopener">Nivo</a>‘s responsive radar chart is the component in question. The syntax for this component is roughly as followed:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">"category"</span>: <span class="string">"category1"</span>,</span><br><span class="line">    <span class="attr">"key1"</span>: <span class="number">53</span>,</span><br><span class="line">    <span class="attr">"key2"</span>: <span class="number">74</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">"category"</span>: <span class="string">"category2"</span>,</span><br><span class="line">    <span class="attr">"key1"</span>: <span class="number">53</span>,</span><br><span class="line">    <span class="attr">"key2"</span>: <span class="number">74</span></span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>With the react component receiving props in this manner:<br><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;ResponsiveRadar</span><br><span class="line">    (...)</span><br><span class="line">    keys=&#123;[</span><br><span class="line">      <span class="string">"key1"</span></span><br><span class="line">      <span class="string">"key2"</span></span><br><span class="line">    (...)</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>@startuml<br>header Charts.js<br>title Original (Deprecated) LifeCycle<br>scale 500 width<br>hide empty description<br>[*] –&gt; ComponentDidMount : Props<br>ComponentDidMount : fetchKey1Data</p>
+<p>ComponentDidMount –&gt; State : data</p>
+<p>state State {<br>  data : {data}<br>}</p>
+<p>State –&gt; UserInput : Render Chart</p>
+<p>UserInput -&gt; ComponentWillReceiveProps : Props<br>UserInput : Key2Data<br>UserInput : newKey1Data</p>
+<p>ComponentWillReceiveProps : Update Data<br>ComponentWillReceiveProps –&gt; State : newData<br>@enduml</p>
+<hr>
+<h3 id="Deriving-State"><a href="#Deriving-State" class="headerlink" title="Deriving State"></a>Deriving State</h3><p><img src="http://3.bp.blogspot.com/_G1Ksn2LCj-U/So44EN-GypI/AAAAAAAABwM/yvOGOzECSGk/s400/xkcd+derivative.PNG" alt="xkcd+derivative.PNG"><br>As stated by the react team:</p>
+<blockquote>
+<p>[…] as a general rule, derived state should be used <strong>sparingly</strong>.</p>
+<ol>
+<li>If you’re using derived state to memoize some computation based only on the current props, you don’t need derived state.</li>
+<li>If you’re updating derived state unconditionally or updating it whenever props and state don’t match, your component likely resets its state too frequently.</li>
+</ol>
+</blockquote>
+<p>In this scenario, the state is depended on the source props and will always change when the props are updated with new data.<br>!!!note  <code>getDerivedStateFromProps</code> is a static method<br>Unlike componentWillReceiveProps, <code>this</code> is not available in getDerivedStateFromProps.<br>!!!<br>@startuml<br>header Charts.js<br>title New LifeCycle<br>scale 500 width<br>hide empty description<br>[*] –&gt; ComponentDidMount : Props<br>ComponentDidMount : fetchKey1Data</p>
+<p>ComponentDidMount –&gt; getDerivedStateFromProps : Props<br>getDerivedStateFromProps : (props, state)<br>getDerivedStateFromProps : Will hold a draft of the datastructure<br>getDerivedStateFromProps : conditionally format props data accordingly to source<br>getDerivedStateFromProps : maintaining stasis for the data that has not been changed.</p>
+<p>getDerivedStateFromProps –&gt; State : formatteddata</p>
+<p>state State {<br>  data : {data}<br>}</p>
+<p>State –&gt; UserInput : Render Chart</p>
+<p>UserInput -&gt; componentDidUpdate : Props<br>UserInput : Key2Data<br>UserInput : newKey1Data</p>
+<p>componentDidUpdate : Triggers fetching key2data (only on first run)<br>componentDidUpdate –&gt; getDerivedStateFromProps : newData<br>@enduml</p>
+<p>!!!note<br>componentDidUpdate runs only once, and that is to trigger the first rendering of key2 data. This is somewhat unusually and very specific to the current flow of my project. If you are curious, check out <a href="https://github.com/CaninoDev/lecheleccion" target="_blank" rel="noopener">Lecheleccion</a> github page.<br>!!!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/A-Stately-Examination/" data-id="cjmb1oekm0001subtn18fhqbs" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Kitting-out-with-Homekit-HomeBridge" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" class="article-date">
+  <time datetime="2018-09-20T21:43:49.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/">Kitting Out With Homekit/HomeBridge</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Kitting-out-the-home-with-Homekit-Homebridge-part-I"><a href="#Kitting-out-the-home-with-Homekit-Homebridge-part-I" class="headerlink" title="Kitting out the home with Homekit/Homebridge (part I)"></a>Kitting out the home with Homekit/Homebridge (part I)</h1><p>After having spent two months attending the intense and illustrious <a href="https://flatironschool.com/" target="_blank" rel="noopener">Flatiron School</a>, I decided to get my hands dirty with a hands on side-project at home. I wanted to hone my skills on something that was somewhat practical and would present enough new concepts to be challenging but not overwhelming for my skill level.</p>
+<p>Since it is the heart of summer, what better project to dive into than to integrate my 7 year old <a href="https://www.lg.com/us/support-product/lg-LW1010ER" target="_blank" rel="noopener">LG LW1010ER Air Conditioner</a> controlled by a basic <a href="https://lg-electronics.airconditioneri.com/6711a20034g-air-conditioner-remote.html?product_id=3MO7AF5hO_kusA" target="_blank" rel="noopener">remote</a> with Homekit.</p>
+<p>!!!note  Note<br>I chose Homekit as I already have bought into the Apple ecosystem with several iOS devices and prefer the available integration the API framework provides. Furthermore, the framework is fairly basic and is ideal for an advanced beginner in Javascript.</p>
+<p>There are a number of other frameworks that one may want to consider (i.e. <a href="http://www.domoticz.com/" target="_blank" rel="noopener">Domoticz</a>, <a href="https://www.home-assistant.io/" target="_blank" rel="noopener">Home Assistant</a>, and <a href="https://calaos.fr/en/" target="_blank" rel="noopener">Calaos</a>) but are outside the scope of this article.<br>!!!</p>
+<h2 id="Considerations"><a href="#Considerations" class="headerlink" title="Considerations"></a>Considerations</h2><p>This article assumes a solid understanding of ES6+ Javascript and an ability to control an IR transmitter programmatically.</p>
+<p>I already have a <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/" target="_blank" rel="noopener">Raspberry Pi</a> (currently used as a <a href="https://pi-hole.net/" target="_blank" rel="noopener">Pi-hole®</a> ad-blocking DNS and <a href="http://www.pivpn.io/" target="_blank" rel="noopener">PiVPN</a> server). Since the integrated GPIO pins are not being used, I purchased an <a href="https://www.amazon.com/IR-Remote-Control-Transceiver-Raspberry/dp/B0713SK7RJ/ref=sr_1_1?ie=UTF8&amp;qid=1531342380&amp;sr=8-1&amp;keywords=ir+raspberry+pi" target="_blank" rel="noopener">IR Infrared Remote Control Transceiver Shield</a> and installed <a href="http://www.lirc.org/" target="_blank" rel="noopener">LIRC</a>, a library framework to control the IR shield. For more information on setting up LIRC, refer to <a href="https://raspberrypi.stackexchange.com/questions/70945/setting-up-a-remote-control-using-lirc" target="_blank" rel="noopener">setting up a remote control using lirc</a>.</p>
+<p>A javascript implementation that emulates Apple’s HomeKit API called <a href="https://github.com/nfarina/homebridge" target="_blank" rel="noopener">Homebridge</a> will be used in this case-study.</p>
+<h2 id="What-is-Homebridge"><a href="#What-is-Homebridge" class="headerlink" title="What is Homebridge?"></a>What is Homebridge?</h2><p>From their github:</p>
+<blockquote>
+<p>Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of “smart home” devices.</p>
+</blockquote>
+<p>Apple’s <a href="https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/HomeKitDeveloperGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40015050" target="_blank" rel="noopener">HomeKit Developer Guide</a> is a great resource to learning about Homekit but is a bit overwhelming. Homebridge and its underlying engine, <a href="https://github.com/KhaosT/HAP-NodeJS" target="_blank" rel="noopener">HAP-NodeJS</a>, handles much of the heavy lifting for you. It is a great starting point and leaves the developer just with defining the accessories and coding the conotrol logic. A plethora of <a href="https://www.npmjs.com/search?q=keywords:homebridge-plugin" target="_blank" rel="noopener">plugins</a> have already been written and thus provides many examples to study from to gain a better understanding of the framework.</p>
+<h3 id="Terminology"><a href="#Terminology" class="headerlink" title="Terminology"></a>Terminology</h3><h4 id="Bridge"><a href="#Bridge" class="headerlink" title="Bridge"></a>Bridge</h4><p>A <code>bridge</code> is a special type of occessory (see below) that facilitates communication for accessories that does not natively support the Homekit framework or Homekit Accessory Protocol (HAP). Accessories that rely on IR transmission, <a href="https://www.wink.com/" target="_blank" rel="noopener">Wink</a>‘s protocol, or, if you want to be really creative, a pattern of knocks for control can be translated by the <code>bridge</code> to HAP. It facilitates communication on a device’s attributes, status and translates control commands in the accessory’s native format. In order to take advantage of many of Homekit’s automation features, the <code>bridge</code> should be installed on an always-on network-connected device. In this example, Hombridge will act as a bridge and is installed on a Raspberry Pi.</p>
+<h4 id="Accessory"><a href="#Accessory" class="headerlink" title="Accessory"></a>Accessory</h4><p>An <code>accessory</code> is the physical device in question such as a light, garage door, thermostat, etc… An <code>accessory</code> has one or more <code>service</code>s associated with it.</p>
+<h4 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h4><p>A <code>service</code> represents the function of the <code>accessory</code> and consists of one or more <code>characteristic</code>s. A <code>service</code> may be a light service to control on/off and dimmer states of a device or a thermostat service to control temperature.</p>
+<h4 id="Characteristic"><a href="#Characteristic" class="headerlink" title="Characteristic"></a>Characteristic</h4><p>A <code>characteristic</code> is a property of a service such as current state of the on/off switch, the current temperature, or target mode of the device. A characteristic may be either read-only or read-write.</p>
+<p>!!!note  Note<br>While it is possible to develop custom services and characteristics for a device, Siri only recognizes Homekit’s predefined services and characteristics. HAP-Nodejs’s <a href="https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js" target="_blank" rel="noopener">supported types</a> provides a list of such services and characteristics recognizable by Homekit through Homebridge. Towards the bottom of this source code is a list of services along with their required and optional characteristics. As of this writing, there is a 1:1 parity between Homekit and HAP-nodejs.</p>
+<p>It is recommended to use a combination of pre-defined services and characteristics to mirror an accessory’s capability rather than developing custom service(s). This is done by linking services to a primary service. This will be expanded on later in this case-study.<br>!!!</p>
+<h3 id="Homekit-Services"><a href="#Homekit-Services" class="headerlink" title="Homekit Services"></a>Homekit Services</h3><p>There are a number of relevant services for this case study, but it does not mean we will use them all. There is potential for alternate mappings of Homekit services to the accessory (which can be made up of multiple devices as it is in this case)</p>
+<h5 id="HeaterCooler"><a href="#HeaterCooler" class="headerlink" title="HeaterCooler"></a>HeaterCooler</h5><hr>
+<h6 id="Required-Characteristics"><a href="#Required-Characteristics" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── Active (read, write)<br>├── CurrentHeaterCoolerState (read)<br>├── TargetHeaterCoolerState (read, write)<br>├── CurrentTemperature (read)</p>
+<h6 id="Optional-Characteristics"><a href="#Optional-Characteristics" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── LockPhysicalControls (read, write, notify)<br>├── Name (read, write, notify)<br>├── SwingMode (read, write, notify)<br>├── CoolingThresholdTemperature (read, write, notify)<br>├── HeatingThresholdTemperature (read, write, notify)<br>├── TemperatureDisplayUnits (read, write, notify)<br>├── RotationSpeed (read, write, notify)</p>
+<h5 id="Thermostat"><a href="#Thermostat" class="headerlink" title="Thermostat"></a>Thermostat</h5><hr>
+<h6 id="Required-Characteristics-1"><a href="#Required-Characteristics-1" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── CurrentHeatingCoolingState (read, notify)<br>├── TargetHeatingCoolingState  (read, write, notify)<br>├── CurrentTemperature (read, notify)<br>├── TargetTemperature  (read, write, notify)<br>├── TemperatureDisplayUnits  (read, write, notify)</p>
+<h6 id="Optional-Characteristics-1"><a href="#Optional-Characteristics-1" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── CurrentRelativeHumidity (read, notify)<br>├── TargetRelativeHumidity (read, write, notify)<br>├── CoolingThresholdTemperature (read, write, notify)<br>├── HeatingThresholdTemperature (read, write, notify)<br>├── Name (read, write, notify)</p>
+<h5 id="Fan"><a href="#Fan" class="headerlink" title="Fan"></a>Fan</h5><hr>
+<h6 id="Required-Characteristics-2"><a href="#Required-Characteristics-2" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── On (read, write, notify)</p>
+<h6 id="Optional-Characteristics-2"><a href="#Optional-Characteristics-2" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── RotationDirection (read, write, notify)<br>├── RotationSpeed  (read, write, notify)<br>├── Name (read, write, notify)</p>
+<h5 id="Fanv2"><a href="#Fanv2" class="headerlink" title="Fanv2"></a>Fanv2</h5><h6 id="Required-Characteristics-3"><a href="#Required-Characteristics-3" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── Active (read, write, notify)</p>
+<h6 id="Optional-Characteristics-3"><a href="#Optional-Characteristics-3" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── CurrentFanStatev (read, notify)<br>├── TargetFanState (read, write, notify)<br>├── LockPhysicalControls (r,w,n)<br>├── Name  (read, write, notify)<br>├── RotationDirection  (read, write, notify)<br>├── RotationSpeed  (read, write, notify)<br>├── SwingMode  (read, write, notify)</p>
+<hr>
+<h6 id="Required-Characteristics-4"><a href="#Required-Characteristics-4" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── On (read, write, notify)</p>
+<h6 id="Optional-Characteristics-4"><a href="#Optional-Characteristics-4" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── RotationDirection (read, write, notify)<br>├── RotationSpeed<br>├── Name</p>
+<h3 id="Controls-for-the-LG-LW1010ER-Air-Conditioner"><a href="#Controls-for-the-LG-LW1010ER-Air-Conditioner" class="headerlink" title="Controls for the LG LW1010ER Air Conditioner"></a>Controls for the LG LW1010ER Air Conditioner</h3><p>The end-user can control the following settings on the LG:</p>
+<hr>
+<h5 id="Power"><a href="#Power" class="headerlink" title="Power"></a>Power</h5><p>├── On/Off</p>
+<h5 id="Temperature-min-60°-max-86°-steps-1°-unit-F°"><a href="#Temperature-min-60°-max-86°-steps-1°-unit-F°" class="headerlink" title="Temperature (min: 60°, max: 86°, steps: 1°, unit F°)"></a>Temperature (min: 60°, max: 86°, steps: 1°, unit F°)</h5><p>├── Up<br>├── Down</p>
+<h5 id="Modes-select-by-cycling-through-the-modes"><a href="#Modes-select-by-cycling-through-the-modes" class="headerlink" title="Modes (select by cycling through the modes)"></a>Modes (select by cycling through the modes)</h5><p>├── 1. Cool<br>├── 2. Energy Saver<br>├── 3. Fan<br>├── 4. Dry</p>
+<h5 id="Timer-steps-1-hour-up-to-12-hours-to-shutdown"><a href="#Timer-steps-1-hour-up-to-12-hours-to-shutdown" class="headerlink" title="Timer (steps: 1 hour up to 12 hours) to shutdown"></a>Timer (steps: 1 hour up to 12 hours) to shutdown</h5><p>├── (increment by 1 hour)</p>
+<h5 id="Fan-Speed-select-by-cycling-through-the-fan-speeds"><a href="#Fan-Speed-select-by-cycling-through-the-fan-speeds" class="headerlink" title="Fan Speed (select by cycling through the fan speeds)*"></a>Fan Speed (select by cycling through the fan speeds)*</h5><p>├── 1. High<br>├── 2. Low<br>├── 3. Med</p>
+<hr>
+<p>*Odd ordering I know…</p>
+<h3 id="DHT-22-Temperature-and-Humidity-Sensor"><a href="#DHT-22-Temperature-and-Humidity-Sensor" class="headerlink" title="DHT-22 Temperature and Humidity Sensor"></a>DHT-22 Temperature and Humidity Sensor</h3><p>The sensor provides a reading of current conditions when polled for no less than every 2 seconds:<br>├── Temperature (-40 ℃ ~ 80 ℃ )<br>├── Humidity (0-100% Relative Humidity)</p>
+<p>Stay Tuned for Part II</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" data-id="cjmb1oel40004subtr3ke4bd8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Regular-Expressions" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/Regular-Expressions/" class="article-date">
+  <time datetime="2018-09-20T21:43:42.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/Regular-Expressions/">Regular Expressions</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Regular-Expressions"><a href="#Regular-Expressions" class="headerlink" title="Regular Expressions"></a>Regular Expressions</h1><h4 id="An-Irregular-Impression"><a href="#An-Irregular-Impression" class="headerlink" title="(An Irregular Impression)"></a>(An Irregular Impression)</h4><hr>
+<p>Let’s take a look at the following:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">^[a-zA-Z<span class="number">0</span>-<span class="number">9</span>.!<span class="comment">#$%&amp;'*+/=?^_`&#123;|&#125;~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&#123;0,61&#125;</span></span><br><span class="line">[a-zA-Z<span class="number">0</span>-<span class="number">9</span>])?(?<span class="symbol">:</span>\.[a-zA-Z<span class="number">0</span>-<span class="number">9</span>](?<span class="symbol">:</span>[a-zA-Z<span class="number">0</span>-<span class="number">9</span>-]&#123;<span class="number">0</span>,<span class="number">61</span>&#125;[a-zA-Z<span class="number">0</span>-<span class="number">9</span>])?)*$</span><br></pre></td></tr></table></figure>
+<p>This apparently nonsensical expression is actually quite powerful. It will validate or match most email addresses. Useful for validating a user’s input for when, by way of example, they want to subscribe to Bob Loblaw’s Law Blog.</p>
+<p><div align="center"><img src="https://media.giphy.com/media/GSB9ORFWdpiWA/giphy.gif"></div><div align="center"><sub>I highly recommend his services…</sub></div><br></p>
+<p>Chances are you have used an expression of this type. Recognize this?</p>
+<p><code>*.rb</code></p>
+<p>This will match all filenames with the filename extension <code>rb</code>.<br>Even our resident, the lugubrious Edward Norton, alluded to the use of this type of expression recently during his presentation. Here is a snippet of <code>inflection.rb</code>:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inflect.plural(<span class="regexp">/$/</span>, <span class="string">"s"</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/s$/i</span>, <span class="string">"s"</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/^(ax|test)is$/i</span>, <span class="string">'\1es'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(octop|vir)us$/i</span>, <span class="string">'\1i'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(octop|vir)i$/i</span>, <span class="string">'\1i'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(alias|status)$/i</span>, <span class="string">'\1es'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(bu)s$/i</span>, <span class="string">'\1ses'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(buffal|tomat)o$/i</span>, <span class="string">'\1oes'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/([ti])um$/i</span>, <span class="string">'\1a'</span>)</span><br></pre></td></tr></table></figure>
+<p>In this particular example, the expressions are used to match prefixes with the appropriate pluralizing conjugations. These expressions are classified as regular expressions and are a special type of formal language.</p>
+<h2 id="Formal-Language"><a href="#Formal-Language" class="headerlink" title="Formal Language"></a>Formal Language</h2><h5 id="Casual-Babblings"><a href="#Casual-Babblings" class="headerlink" title="(Casual Babblings)"></a>(Casual Babblings)</h5><p>To first understand regular expressions, we must examine what a formal language is. Gaining this understanding will help clear away the apparent obfuscation of its syntax. According to wikipedia, a formal language is</p>
+<blockquote>
+<p>is a set of strings of symbols together with a set of rules that are specific to it.</p>
+</blockquote>
+<p>The following is such a language:</p>
+<p>(String of symbols)</p>
+<ul>
+<li>∅ denoting the set ∅.</li>
+<li>ε denoting the set containing only the “empty” string, which has no characters at all.</li>
+</ul>
+<hr>
+<h5 id="Wait-wait-wait…-Are-we-learning-greek"><a href="#Wait-wait-wait…-Are-we-learning-greek" class="headerlink" title="Wait wait wait… Are we learning greek?"></a>Wait wait wait… Are we learning greek?</h5><p>no..</p>
+<hr>
+<ul>
+<li>a in Σ denoting the set containing only the character a.</li>
+</ul>
+<p>(Operators)</p>
+<ul>
+<li>(concatenation) let <code>R</code> is “Did you hear about the restaurant on the moon?” and <code>S</code> is “Great food, no atmosphere”, thus <code>RS</code> is “A terrible joke”</li>
+<li>(alternation) let <code>R</code> be {“ab”, “c”} and let <code>S</code> ne {“ab”. “d”, “ef”}, thus <code>R | S</code> is {“ab”,”c”,”d”,”ef”}</li>
+<li>(Kleene star) <code>R*</code> is the smallest superset of sets that contains ε and contains all combinations of strings that can be concatanated. For example. {“ab”, “c”}* = {ε, “ab”, “c”, “abab”, “abc”, “cab”, “cc”, “ababab”, “abcab”, … }.</li>
+</ul>
+<p>If you would like to know more about Formal Languages, read up on <a href="https://en.wikipedia.org/wiki/Chomsky_hierarchy" target="_blank" rel="noopener">Chomsky hierarchy</a>. In fact, all programming langauges are considered to be a Formal Language. So you are already familiar with them. Regular expressions are no different except that its syntax consists of various symbols with no spaces.</p>
+<h2 id="Typical-Use-Cases"><a href="#Typical-Use-Cases" class="headerlink" title="Typical Use Cases"></a>Typical Use Cases</h2><h5 id="Including-Strange-and-Unusual-Ones"><a href="#Including-Strange-and-Unusual-Ones" class="headerlink" title="(Including Strange and Unusual Ones)"></a>(Including Strange and Unusual Ones)</h5><p><div align="center"><img src="https://imgs.xkcd.com/comics/regular_expressions.png"></div><br><br>Regular expressions (regex) are extremely powerful. They can be used to match telephone numbers in its various formats: (xxx)-yyy-zzzz, xxx-yyy-zzzz, xxx.yyy.zzzz. It can be used to find a substring ‘needle’ that is only seven words away from ‘haystack’ and is the first word of a sentence. Its used by the syntax highlighting engine of your editor. It’s even used in <a href="http://www.silentlycrashing.net/ezgestures/" target="_blank" rel="noopener">ezGestures</a> to interpret gestures that are represented as a series of UDLR strings. These are some of the more pragmatic use cases for regular expressions:</p>
+<ul>
+<li>Parsing and validating user input (password)</li>
+<li>Restructuring user input (date formatting, currency)</li>
+<li>Converting system logs for use with a plotting to graph performance</li>
+<li>Refactoring code via search and replace</li>
+<li>Getting a trailing folder from a path</li>
+</ul>
+<p>Another great thing about regex is that most languages, including Ruby, can interpret regular expressions. However check with your language reference manual to see if there are any variance in syntax.</p>
+<p>And without further ado, here is some of the syntax, keeping in mind that the operator acts on what comes before it:</p>
+<p>Character    | Legend | Example | Sample Match<br>|——|:—:|:—-:|—-:|<br>| <code>\d</code>    | Most engines: one digit from 0 to 9     | <code>file_\d\d</code> | <code>file_25</code>|<br>| <code>\w</code>    | Most engines: “word character”: ASCII letter, digit or underscore     | <code>\w-\w\w\w</code> | <code>A-b_1</code> |<br>|  <code>+</code> |    One or more    Version | <code>\w-\w+</code> |    <code>Version A-b1_1</code> |<br>| <code>.</code> |    Any character except line break | <code>a.c</code> | <code>abc</code> |<br>| <code>.</code>    | Any character except line break    | <code>.*</code> | <code>whatever, man.</code>|<br>| <code>\.</code> |    A period (special character: needs to be escaped by a \) |    <code>a\.c</code> | <code>a.c</code> |<br>| <code>{3}</code> | Exactly three times |    <code>\D{3}</code> |    <code>ABC</code>|<br>| <code>{2,4}</code> | Two to four times |    <code>\d{2,4}</code> |    <code>156</code>|<br>| <code>{3,}</code> | Three or more times |    <code>\w{3,}</code> |    <code>regex_tutorial</code>|<br>| <code>*</code> | Zero or more times |    <code>A*B*C*</code> |    <code>AABBBBBCCCC</code>|<br>| <code>?</code> | Once or none |    <code>plurals?</code> |    <code>plural</code>|<br>| <code>( … )</code> |    Capturing group    | <code>A(nt|pple)</code> |    <code>Apple</code> (captures “pple”)|<br>| <code>[ … ]</code> |    One of the characters in the brackets    | <code>[AEIOU]</code>    | <code>One uppercase vowel</code> |<br>| <code>[ … ]</code> |    One of the characters in the brackets |    <code>T[ao]p</code>    | <code>Tap</code> or <code>Top</code> |<br>| <code>-</code> |    Range indicator    | <code>[a-z]</code> |    <code>One lowercase letter</code>|<br>| <code>[ … ]</code> |    One of the characters in the brackets    | <code>[AB1-5w-z]</code> |    One of either: <code>A</code>,<code>B</code>,<code>1</code>,<code>2</code>,<code>3</code>,<code>4</code>,<code>5</code>,<code>w</code>,<code>x</code>,<code>y</code>,<code>z</code>|<br>| <code>[^x]</code>    | One character that is not x |    <code>[^a-z]{3}</code> |    <code>A1!</code> |</p>
+<p>Any many many more can be found in <a href="http://www.rexegg.com/regex-quickstart.html" target="_blank" rel="noopener">Regex Cheat Sheet</a></p>
+<h2 id="However…"><a href="#However…" class="headerlink" title="However…"></a>However…</h2><blockquote>
+<p>Some people, when confronted with a problem, think “I know, I’ll use regular expressions.” Now they have two problems. –Jamie Zawinski</p>
+</blockquote>
+<p>Even veteran developers who frequently use regex in their every day tasks for 10+ years still have to refer to cheat sheet. While regex’s are powerful, use them prudently. Sometimes there is an alternative tool that can get tbe job done faster than the time it takes to figure out the proper expression. The following are some use cases where regex’s are <em>not</em> recommended:</p>
+<ul>
+<li>Parsing HTML with regex</li>
+<li>Parsing natural langauges, for example obscenity/blacklisted words</li>
+<li>Despite the example in the beginning of this presentation, validating email addresses.</li>
+</ul>
+<h2 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h2><p><div align="center"><img src="http://www.userfriendly.org/cartoons/archives/99aug/uf000939.gif" width="60%"></div><div align="center"><sub>I prefer rg</sub></div></p>
+<ul>
+<li><a href="https://regex101.com/" target="_blank" rel="noopener">Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript</a></li>
+<li><a href="https://github.com/BurntSushi/ripgrep" target="_blank" rel="noopener">GitHub - BurntSushi/ripgrep: ripgrep recursively searches directories for a regex pattern</a></li>
+<li><a href="http://www.regexlib.com/" target="_blank" rel="noopener">Regular Expression Library</a></li>
+<li><a href="https://github.com/aloisdg/awesome-regex" target="_blank" rel="noopener">GitHub - aloisdg/awesome-regex: A curated collection of awesome Regex libraries, tools, frameworks and software</a></li>
+</ul>
+<h2 id="Bonus"><a href="#Bonus" class="headerlink" title="Bonus"></a>Bonus</h2><p>Guess what this matches:</p>
+  <figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]</span></span><br><span class="line"><span class="string">  )+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span></span><br><span class="line">  \r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(</span></span><br><span class="line"><span class="string">  ?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">  \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\0</span></span><br><span class="line"><span class="string">  31]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\</span></span><br><span class="line"><span class="string">  ](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+</span><br><span class="line">  (?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span></span><br><span class="line">  (?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z</span><br><span class="line">  <span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\</span></span><br><span class="line"><span class="string">  r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">   \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">   \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*</span></span><br><span class="line"><span class="string">  )(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)</span><br><span class="line">  *<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+</span></span><br><span class="line"><span class="string">  |\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r</span><br><span class="line">  \n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:</span></span><br><span class="line"><span class="string">  \r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t</span></span><br><span class="line"><span class="string">  ]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031</span></span><br><span class="line"><span class="string">  ]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](</span></span><br><span class="line"><span class="string">  ?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?</span><br><span class="line">  <span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?</span><br><span class="line">  <span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?</span></span><br><span class="line"><span class="params">  :(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?</span></span><br><span class="line"><span class="string">  [ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]</span></span><br><span class="line"><span class="string">  \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|</span></span><br><span class="line"><span class="string">  \\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;</span><br><span class="line">  @,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span></span><br><span class="line">  (?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\</span><br><span class="line">  <span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?</span></span><br><span class="line"><span class="string">  :[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[</span><br><span class="line">  \]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-</span></span><br><span class="line"><span class="params">  \031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(</span></span><br><span class="line"><span class="string">  ?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;</span><br><span class="line">  <span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([</span></span><br><span class="line"><span class="string">  ^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span></span><br><span class="line">  .\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\</span></span><br><span class="line"><span class="params">  ]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\</span></span><br><span class="line"><span class="string">  [\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\</span></span><br><span class="line"><span class="string">  r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\]</span><br><span class="line">  \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]</span></span><br><span class="line"><span class="params">  |</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \0</span></span><br><span class="line"><span class="string">  00-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\</span></span><br><span class="line"><span class="string">  .|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,</span><br><span class="line">  ;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?</span><br><span class="line">  <span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*</span><br><span class="line">  (?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".</span></span><br><span class="line"><span class="string">  \[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[</span></span><br><span class="line"><span class="string">  ^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]</span><br><span class="line">  ]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>,\s*(</span><br><span class="line">  ?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\</span><br><span class="line">  <span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(</span><br><span class="line">  ?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[</span></span><br><span class="line"><span class="string">  \["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t</span><br><span class="line">  ])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t</span></span><br><span class="line"><span class="string">  ])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?</span></span><br><span class="line"><span class="string">  :\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|</span></span><br><span class="line"><span class="params">  \Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:</span></span><br><span class="line"><span class="params">  [^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\</span></span><br><span class="line"><span class="params">  ]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span></span><br><span class="line">  ()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)</span></span><br><span class="line"><span class="string">  ?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;</span></span><br><span class="line"><span class="string">  @,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[</span><br><span class="line">   \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,</span><br><span class="line">  ;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t]</span></span><br><span class="line"><span class="string">  )*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\</span></span><br><span class="line"><span class="string">  "</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?</span><br><span class="line">  (?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".</span></span><br><span class="line"><span class="string">  \[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span></span><br><span class="line">  \r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\[</span></span><br><span class="line"><span class="string">  "</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])</span><br><span class="line">  *))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])</span></span><br><span class="line"><span class="string">  +|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\</span></span><br><span class="line"><span class="string">  .(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z</span></span><br><span class="line"><span class="params">  |</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(</span><br><span class="line">  ?<span class="symbol">:</span>\r\n)?[ \t])*))*)?;\s*)</span><br></pre></td></tr></table></figure>
+<p>  <div align="center"><sub><caption>Do you see the christmas tree?</caption></sub></div></p></figure><paste><p></p>
+</paste>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/Regular-Expressions/" data-id="cjmb1oel50005subtwmhv1lrf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-A-Bug-s-Life" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/A-Bug-s-Life/" class="article-date">
+  <time datetime="2018-09-20T21:43:32.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/A-Bug-s-Life/">A Bug&#39;s Life</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Is-it-possible-to-produce-bug-free-software"><a href="#Is-it-possible-to-produce-bug-free-software" class="headerlink" title="Is it possible to produce bug-free software?"></a>Is it possible to produce bug-free software?</h1><p> - -</p>
+<h2 id="A-Bug’s-Life"><a href="#A-Bug’s-Life" class="headerlink" title="A Bug’s Life"></a>A Bug’s Life</h2><p> - - - - - -</p>
+<h4 id="“We-study-the-past-to-understand-the-present-we-understand-the-present-to-guide-the-future-”-William-Lund"><a href="#“We-study-the-past-to-understand-the-present-we-understand-the-present-to-guide-the-future-”-William-Lund" class="headerlink" title="“We study the past to understand the present; we understand the present to guide the future.” - William Lund"></a>“We study the past to understand the present; we understand the present to guide the future.” - William Lund</h4><p> - - - - - - - - - - - -<br><img src="https://www.wired.com/images_blogs/wiredscience/2013/12/moth-660x548.jpg" alt="image"></p>
+<h6 id="“Moth-found-trapped-between-points-at-Relay-70-Panel-F-of-the-Mark-II-Aiken-Relay-Calculator-while-it-was-being-tested-at-Harvard-University-9-September-1947-Operators-affixed-the-moth-to-the-computer-log-with-the-entry-“First-actual-case-of-bug-being-found”-Grace-Hopper-publicised-this-incident"><a href="#“Moth-found-trapped-between-points-at-Relay-70-Panel-F-of-the-Mark-II-Aiken-Relay-Calculator-while-it-was-being-tested-at-Harvard-University-9-September-1947-Operators-affixed-the-moth-to-the-computer-log-with-the-entry-“First-actual-case-of-bug-being-found”-Grace-Hopper-publicised-this-incident" class="headerlink" title="“Moth found trapped between points at Relay # 70, Panel F, of the Mark II Aiken Relay Calculator while it was being tested at Harvard University, 9 September 1947. Operators affixed the moth to the computer log, with the entry: “First actual case of bug being found”. Grace Hopper publicised this incident"></a>“Moth found trapped between points at Relay # 70, Panel F, of the Mark II Aiken Relay Calculator while it was being tested at Harvard University, 9 September 1947. Operators affixed the moth to the computer log, with the entry: “First actual case of bug being found”. Grace Hopper publicised this incident</h6><p>I had believed for the longest time that this woman, Rear Admiral Grace Hopper, first coined the term “bug” and “debugging”.<br><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Commodore_Grace_M._Hopper%2C_USN_%28covered%29.jpg" alt="image"></p>
+<h6 id="A-native-New-Yorker-she-became-the-first-woman-to-earn-a-Ph-D-in-mathematics-from-Yale-University-in-1934-She-eventually-went-on-to-consult-in-development-of-COBOL-a-language-still-widely-used-today-had-a-US-Navy-ship-christened-in-her-name-a-college-in-Yale-named-after-her-won-40-honorary-degrees-from-universities-around-the-world-and-posthumously-awarded-the-Presidential-Medal-of-Freedom-by-President-Obama"><a href="#A-native-New-Yorker-she-became-the-first-woman-to-earn-a-Ph-D-in-mathematics-from-Yale-University-in-1934-She-eventually-went-on-to-consult-in-development-of-COBOL-a-language-still-widely-used-today-had-a-US-Navy-ship-christened-in-her-name-a-college-in-Yale-named-after-her-won-40-honorary-degrees-from-universities-around-the-world-and-posthumously-awarded-the-Presidential-Medal-of-Freedom-by-President-Obama" class="headerlink" title="A native New Yorker, she became the first woman to earn a Ph.D in mathematics from Yale University in 1934. She eventually went on to consult in development of COBOL (a language still widely used today!), had a US Navy ship christened in her name, a college in Yale named after her, won 40 honorary degrees from universities around the world, and posthumously awarded the Presidential Medal of Freedom by President Obama."></a>A native New Yorker, she became the first woman to earn a Ph.D in mathematics from Yale University in 1934. She eventually went on to consult in development of COBOL (a language still widely used today!), had a US Navy ship christened in her name, a college in Yale named after her, won 40 honorary degrees from universities around the world, and posthumously awarded the Presidential Medal of Freedom by President Obama.</h6><p>While during research for this blog posting, to my chagrin, this turns out not to be the case. This doesn’t detract from her all around badassery however. I highly encourage learning about her. She significantly accelerated the development of programming languages with her significant contribution to COBOL (a langugage still used today!), been described “as appearing to be all Navy, but when you reach inside, you find a ‘Pirate’ dying to be released”, and famously said: “It’s easier to ask forgiveness than it is to get permission. (and its variant: “If it’s a good idea, go ahead and do it. It is much easier to apologize than it is to get permission.”).</p>
+<blockquote>
+<p>“If names be not correct, language is not in accordance with the truth of things.” - Confucius, The Analects of Confucius<br>In fact, the term ‘bugs’ and ‘debugging’ were commonly used at the time among engineering circles. In fact, originally <em>bugge</em> meant “something frightening; scarecrow.” and only just transformed its meaning during the 1870’s. Thomas Edison (NIKOLA TESLA RULES!) wrote:<br>It has been just so in all of my inventions. The first step is an intuition, and comes with a burst, then difficulties arise - this thing gives out and [it is] then that “Bugs” - as such little faults and difficulties are called - show themselves and months of intense watching, study and labor are requisite before commercial success or failure is certainly reached.<br>Among certain, - -ahem - - hipster engineering circles, ‘bugs’ are further redefined as ‘mistake metamorphisms’.<br>Software bugs are the cause of the famous <a href="https://en.wikipedia.org/wiki/Mars_Climate_Orbiter" target="_blank" rel="noopener">Mars Climate Orbiter</a>‘s disintegration in Mar’s atmosphere (we really all should just get on the metric unit), the destruction of the alien mothership in Independence Day, and most importantly (and my personal favorite) a bug in Sid Meier’s Civilization that would cause the normally peaceful Ghandhi to become the most agressive civilization leader in the game.<br>After scouring Stack Exchange (and their numerous forums), industry articles covering computer science, the consensus is that beyond simple Hello_World programs, <strong>software bugs are pretty much a certainty.</strong> (Except when it is a feature.)<br><img src="https://i.imgur.com/88JWeQQ.png" alt="image"><br> - - - - - -</p>
+</blockquote>
+<h2 id="Ant-Colony"><a href="#Ant-Colony" class="headerlink" title="Ant Colony"></a>Ant Colony</h2><p> - - - - - <br>Delving deeper into the rabbit-hole (andf mixing up my metaphors), I wanted to know why. It came down to the principle of Emergence. Many of the postings and articles I have read eventually pointed to <a href="http://pmav.eu/stuff/javascript-game-of-life-v3.1.1/" target="_blank" rel="noopener">Conway’s Game of Life</a>.<br><img src="http://www.jakubkonka.com/images/gof.gif" alt="image"><br>This game has 4 basic rules:</p>
+<ol>
+<li>Any live cell with fewer than two live neighbors dies, as if caused by under population.</li>
+<li>Any live cell with two or three live neighbors lives on to the next generation.</li>
+<li>Any live cell with more than three live neighbors dies, as if by overpopulation.</li>
+<li>Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.<br><img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Conways_game_of_life_breeder_animation.gif" alt="image"><br>Depending on starting conditions, the system has properties that its parts do not have. This game is in a perfect system, thus unanticipated patterns repeat indefinitely.<br>However, software never exists in isolation and do not always produce intended behavior. It is a part of a digital ecology of imperfect actors with partially realized intentions. Interactions are thus unpredictable and sometime with drastic outcomes. These bugs pupates to produce <a href="https://en.wikipedia.org/wiki/Butterfly_effect" target="_blank" rel="noopener">Butterfly Effects</a><br> - - - - - <h2 id="Don’t-let-the-bugs-bug-you…"><a href="#Don’t-let-the-bugs-bug-you…" class="headerlink" title="Don’t let the bugs bug you…."></a>Don’t let the bugs bug you….</h2> - - - - - <br>I mean, look at this critter.<br><img src="https://i.imgur.com/7xDiu11.png" alt="image"><h6 id="It’s-going-to-eat-you"><a href="#It’s-going-to-eat-you" class="headerlink" title="It’s going to eat you!"></a>It’s going to eat you!</h6>Software bugs are here to stay. So be at peace with the their propensity to aggravate you.˜</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/A-Bug-s-Life/" data-id="cjmb1oeki0000subtziuqyzmm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/history-computer-science/">history computer-science</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/history-computer-science/">history computer-science</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/history-computer-science/" style="font-size: 10px;">history computer-science</a> <a href="/tags/homekit-javascript-IoT-raspberry-pi/" style="font-size: 10px;">homekit javascript IoT raspberry-pi</a> <a href="/tags/regex-regular-expressions/" style="font-size: 10px;">regex regular-expressions</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/09/20/A-Stately-Examination/">A Stately Examination</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/">Kitting Out With Homekit/HomeBridge</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Regular-Expressions/">Regular Expressions</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/A-Bug-s-Life/">A Bug&#39;s Life</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Ian Canino<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>A Stately Examination | The Mishaps of A Wandering Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="A Stately Examination on the Lifecycle of React Component  IntroductionRecently was working on a project and came across a situation where some pre-render manipulation of props were required. Ordinari">
+<meta name="keywords" content="blog javascript react developer dev programming">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Stately Examination">
+<meta property="og:url" content="http://caninodev.github.io/2018/09/20/A-Stately-Examination/index.html">
+<meta property="og:site_name" content="The Mishaps of A Wandering Developer">
+<meta property="og:description" content="A Stately Examination on the Lifecycle of React Component  IntroductionRecently was working on a project and came across a situation where some pre-render manipulation of props were required. Ordinari">
+<meta property="og:locale" content="english">
+<meta property="og:image" content="https://i.imgur.com/SzwqqxZ.png">
+<meta property="og:image" content="https://i.kym-cdn.com/entries/icons/original/000/000/908/pac_man_pie_chart.jpg">
+<meta property="og:image" content="http://3.bp.blogspot.com/_G1Ksn2LCj-U/So44EN-GypI/AAAAAAAABwM/yvOGOzECSGk/s400/xkcd+derivative.PNG">
+<meta property="og:updated_time" content="2018-09-20T20:44:00.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="A Stately Examination">
+<meta name="twitter:description" content="A Stately Examination on the Lifecycle of React Component  IntroductionRecently was working on a project and came across a situation where some pre-render manipulation of props were required. Ordinari">
+<meta name="twitter:image" content="https://i.imgur.com/SzwqqxZ.png">
+  
+    <link rel="alternate" href="/atom.xml" title="The Mishaps of A Wandering Developer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">The Mishaps of A Wandering Developer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">I am never lost, I am where I want to be even when I don&#39;t know it</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://caninodev.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-A-Stately-Examination" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/A-Stately-Examination/" class="article-date">
+  <time datetime="2018-09-20T21:44:00.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      A Stately Examination
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="A-Stately-Examination-on-the-Lifecycle-of-React-Component"><a href="#A-Stately-Examination-on-the-Lifecycle-of-React-Component" class="headerlink" title="A Stately Examination on the Lifecycle of React Component"></a>A Stately Examination on the Lifecycle of React Component</h1><p><img src="https://i.imgur.com/SzwqqxZ.png" alt="SzwqqxZ.png"></p>
+<hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Recently was working on a project and came across a situation where some pre-render manipulation of props were required. Ordinarily this would be handled via <code>componentWillReceiveProps</code>. However the React team decided to deprecate this function and, in its place, for very rare circumstances, <code>getDerivedStatesFromProps</code> was provided in React 16. However there is some <a href="https://stackoverflow.com/questions/49617486/how-to-use-lifecycle-method-getderivedstatefromprops-as-opposed-to-componentwill" target="_blank" rel="noopener">confusion</a> and <a href="https://github.com/reactjs/reactjs.org/issues/721" target="_blank" rel="noopener">concerns</a> as to how it was meant to be used. The following is a concrete use case on the usage of this functionality, and in addition to the <a href="https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html" target="_blank" rel="noopener">guidelines</a> and <a href="https://reactjs.org/blog/2018/03/27/update-on-async-rendering.html#fetching-external-data-when-props-change" target="_blank" rel="noopener">examples</a> provided by the team, may prove helpful in further understanding.</p>
+<hr>
+<p><img src="https://i.kym-cdn.com/entries/icons/original/000/000/908/pac_man_pie_chart.jpg" alt="pac_man_pie_chart.jpg"></p>
+<h2 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h2><p>In my project, I wanted to render a chart that would provide certain aggregate calculations on two data points. However, one data point was dependant on user input and, ideally, the chart should render the other data point. The situation was further complicated by a specific data format that must be fed into the React component rendering the chart. In this particular project, <a href="http://nivo.rocks/" target="_blank" rel="noopener">Nivo</a>‘s responsive radar chart is the component in question. The syntax for this component is roughly as followed:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">"category"</span>: <span class="string">"category1"</span>,</span><br><span class="line">    <span class="attr">"key1"</span>: <span class="number">53</span>,</span><br><span class="line">    <span class="attr">"key2"</span>: <span class="number">74</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">"category"</span>: <span class="string">"category2"</span>,</span><br><span class="line">    <span class="attr">"key1"</span>: <span class="number">53</span>,</span><br><span class="line">    <span class="attr">"key2"</span>: <span class="number">74</span></span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>With the react component receiving props in this manner:<br><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;ResponsiveRadar</span><br><span class="line">    (...)</span><br><span class="line">    keys=&#123;[</span><br><span class="line">      <span class="string">"key1"</span></span><br><span class="line">      <span class="string">"key2"</span></span><br><span class="line">    (...)</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>@startuml<br>header Charts.js<br>title Original (Deprecated) LifeCycle<br>scale 500 width<br>hide empty description<br>[*] –&gt; ComponentDidMount : Props<br>ComponentDidMount : fetchKey1Data</p>
+<p>ComponentDidMount –&gt; State : data</p>
+<p>state State {<br>  data : {data}<br>}</p>
+<p>State –&gt; UserInput : Render Chart</p>
+<p>UserInput -&gt; ComponentWillReceiveProps : Props<br>UserInput : Key2Data<br>UserInput : newKey1Data</p>
+<p>ComponentWillReceiveProps : Update Data<br>ComponentWillReceiveProps –&gt; State : newData<br>@enduml</p>
+<hr>
+<h3 id="Deriving-State"><a href="#Deriving-State" class="headerlink" title="Deriving State"></a>Deriving State</h3><p><img src="http://3.bp.blogspot.com/_G1Ksn2LCj-U/So44EN-GypI/AAAAAAAABwM/yvOGOzECSGk/s400/xkcd+derivative.PNG" alt="xkcd+derivative.PNG"><br>As stated by the react team:</p>
+<blockquote>
+<p>[…] as a general rule, derived state should be used <strong>sparingly</strong>.</p>
+<ol>
+<li>If you’re using derived state to memoize some computation based only on the current props, you don’t need derived state.</li>
+<li>If you’re updating derived state unconditionally or updating it whenever props and state don’t match, your component likely resets its state too frequently.</li>
+</ol>
+</blockquote>
+<p>In this scenario, the state is depended on the source props and will always change when the props are updated with new data.<br>!!!note  <code>getDerivedStateFromProps</code> is a static method<br>Unlike componentWillReceiveProps, <code>this</code> is not available in getDerivedStateFromProps.<br>!!!<br>@startuml<br>header Charts.js<br>title New LifeCycle<br>scale 500 width<br>hide empty description<br>[*] –&gt; ComponentDidMount : Props<br>ComponentDidMount : fetchKey1Data</p>
+<p>ComponentDidMount –&gt; getDerivedStateFromProps : Props<br>getDerivedStateFromProps : (props, state)<br>getDerivedStateFromProps : Will hold a draft of the datastructure<br>getDerivedStateFromProps : conditionally format props data accordingly to source<br>getDerivedStateFromProps : maintaining stasis for the data that has not been changed.</p>
+<p>getDerivedStateFromProps –&gt; State : formatteddata</p>
+<p>state State {<br>  data : {data}<br>}</p>
+<p>State –&gt; UserInput : Render Chart</p>
+<p>UserInput -&gt; componentDidUpdate : Props<br>UserInput : Key2Data<br>UserInput : newKey1Data</p>
+<p>componentDidUpdate : Triggers fetching key2data (only on first run)<br>componentDidUpdate –&gt; getDerivedStateFromProps : newData<br>@enduml</p>
+<p>!!!note<br>componentDidUpdate runs only once, and that is to trigger the first rendering of key2 data. This is somewhat unusually and very specific to the current flow of my project. If you are curious, check out <a href="https://github.com/CaninoDev/lecheleccion" target="_blank" rel="noopener">Lecheleccion</a> github page.<br>!!!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/A-Stately-Examination/" data-id="cjmb1oekm0001subtn18fhqbs" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Kitting Out With Homekit/HomeBridge</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/history-computer-science/">history computer-science</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/history-computer-science/" style="font-size: 10px;">history computer-science</a> <a href="/tags/homekit-javascript-IoT-raspberry-pi/" style="font-size: 10px;">homekit javascript IoT raspberry-pi</a> <a href="/tags/regex-regular-expressions/" style="font-size: 10px;">regex regular-expressions</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/09/20/A-Stately-Examination/">A Stately Examination</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/">Kitting Out With Homekit/HomeBridge</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Regular-Expressions/">Regular Expressions</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/A-Bug-s-Life/">A Bug&#39;s Life</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Ian Canino<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

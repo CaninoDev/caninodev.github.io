@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Kitting Out With Homekit/HomeBridge | The Mishaps of A Wandering Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Kitting out the home with Homekit/Homebridge (part I)After having spent two months attending the intense and illustrious Flatiron School, I decided to get my hands dirty with a hands on side-project a">
+<meta name="keywords" content="homekit javascript IoT raspberry-pi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kitting Out With Homekit&#x2F;HomeBridge">
+<meta property="og:url" content="http://caninodev.github.io/2018/09/20/Kitting-out-with-Homekit-HomeBridge/index.html">
+<meta property="og:site_name" content="The Mishaps of A Wandering Developer">
+<meta property="og:description" content="Kitting out the home with Homekit/Homebridge (part I)After having spent two months attending the intense and illustrious Flatiron School, I decided to get my hands dirty with a hands on side-project a">
+<meta property="og:locale" content="english">
+<meta property="og:updated_time" content="2018-09-20T20:43:49.084Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kitting Out With Homekit&#x2F;HomeBridge">
+<meta name="twitter:description" content="Kitting out the home with Homekit/Homebridge (part I)After having spent two months attending the intense and illustrious Flatiron School, I decided to get my hands dirty with a hands on side-project a">
+  
+    <link rel="alternate" href="/atom.xml" title="The Mishaps of A Wandering Developer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">The Mishaps of A Wandering Developer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">I am never lost, I am where I want to be even when I don&#39;t know it</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://caninodev.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Kitting-out-with-Homekit-HomeBridge" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" class="article-date">
+  <time datetime="2018-09-20T21:43:49.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Kitting Out With Homekit/HomeBridge
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Kitting-out-the-home-with-Homekit-Homebridge-part-I"><a href="#Kitting-out-the-home-with-Homekit-Homebridge-part-I" class="headerlink" title="Kitting out the home with Homekit/Homebridge (part I)"></a>Kitting out the home with Homekit/Homebridge (part I)</h1><p>After having spent two months attending the intense and illustrious <a href="https://flatironschool.com/" target="_blank" rel="noopener">Flatiron School</a>, I decided to get my hands dirty with a hands on side-project at home. I wanted to hone my skills on something that was somewhat practical and would present enough new concepts to be challenging but not overwhelming for my skill level.</p>
+<p>Since it is the heart of summer, what better project to dive into than to integrate my 7 year old <a href="https://www.lg.com/us/support-product/lg-LW1010ER" target="_blank" rel="noopener">LG LW1010ER Air Conditioner</a> controlled by a basic <a href="https://lg-electronics.airconditioneri.com/6711a20034g-air-conditioner-remote.html?product_id=3MO7AF5hO_kusA" target="_blank" rel="noopener">remote</a> with Homekit.</p>
+<p>!!!note  Note<br>I chose Homekit as I already have bought into the Apple ecosystem with several iOS devices and prefer the available integration the API framework provides. Furthermore, the framework is fairly basic and is ideal for an advanced beginner in Javascript.</p>
+<p>There are a number of other frameworks that one may want to consider (i.e. <a href="http://www.domoticz.com/" target="_blank" rel="noopener">Domoticz</a>, <a href="https://www.home-assistant.io/" target="_blank" rel="noopener">Home Assistant</a>, and <a href="https://calaos.fr/en/" target="_blank" rel="noopener">Calaos</a>) but are outside the scope of this article.<br>!!!</p>
+<h2 id="Considerations"><a href="#Considerations" class="headerlink" title="Considerations"></a>Considerations</h2><p>This article assumes a solid understanding of ES6+ Javascript and an ability to control an IR transmitter programmatically.</p>
+<p>I already have a <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/" target="_blank" rel="noopener">Raspberry Pi</a> (currently used as a <a href="https://pi-hole.net/" target="_blank" rel="noopener">Pi-hole®</a> ad-blocking DNS and <a href="http://www.pivpn.io/" target="_blank" rel="noopener">PiVPN</a> server). Since the integrated GPIO pins are not being used, I purchased an <a href="https://www.amazon.com/IR-Remote-Control-Transceiver-Raspberry/dp/B0713SK7RJ/ref=sr_1_1?ie=UTF8&amp;qid=1531342380&amp;sr=8-1&amp;keywords=ir+raspberry+pi" target="_blank" rel="noopener">IR Infrared Remote Control Transceiver Shield</a> and installed <a href="http://www.lirc.org/" target="_blank" rel="noopener">LIRC</a>, a library framework to control the IR shield. For more information on setting up LIRC, refer to <a href="https://raspberrypi.stackexchange.com/questions/70945/setting-up-a-remote-control-using-lirc" target="_blank" rel="noopener">setting up a remote control using lirc</a>.</p>
+<p>A javascript implementation that emulates Apple’s HomeKit API called <a href="https://github.com/nfarina/homebridge" target="_blank" rel="noopener">Homebridge</a> will be used in this case-study.</p>
+<h2 id="What-is-Homebridge"><a href="#What-is-Homebridge" class="headerlink" title="What is Homebridge?"></a>What is Homebridge?</h2><p>From their github:</p>
+<blockquote>
+<p>Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of “smart home” devices.</p>
+</blockquote>
+<p>Apple’s <a href="https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/HomeKitDeveloperGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40015050" target="_blank" rel="noopener">HomeKit Developer Guide</a> is a great resource to learning about Homekit but is a bit overwhelming. Homebridge and its underlying engine, <a href="https://github.com/KhaosT/HAP-NodeJS" target="_blank" rel="noopener">HAP-NodeJS</a>, handles much of the heavy lifting for you. It is a great starting point and leaves the developer just with defining the accessories and coding the conotrol logic. A plethora of <a href="https://www.npmjs.com/search?q=keywords:homebridge-plugin" target="_blank" rel="noopener">plugins</a> have already been written and thus provides many examples to study from to gain a better understanding of the framework.</p>
+<h3 id="Terminology"><a href="#Terminology" class="headerlink" title="Terminology"></a>Terminology</h3><h4 id="Bridge"><a href="#Bridge" class="headerlink" title="Bridge"></a>Bridge</h4><p>A <code>bridge</code> is a special type of occessory (see below) that facilitates communication for accessories that does not natively support the Homekit framework or Homekit Accessory Protocol (HAP). Accessories that rely on IR transmission, <a href="https://www.wink.com/" target="_blank" rel="noopener">Wink</a>‘s protocol, or, if you want to be really creative, a pattern of knocks for control can be translated by the <code>bridge</code> to HAP. It facilitates communication on a device’s attributes, status and translates control commands in the accessory’s native format. In order to take advantage of many of Homekit’s automation features, the <code>bridge</code> should be installed on an always-on network-connected device. In this example, Hombridge will act as a bridge and is installed on a Raspberry Pi.</p>
+<h4 id="Accessory"><a href="#Accessory" class="headerlink" title="Accessory"></a>Accessory</h4><p>An <code>accessory</code> is the physical device in question such as a light, garage door, thermostat, etc… An <code>accessory</code> has one or more <code>service</code>s associated with it.</p>
+<h4 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h4><p>A <code>service</code> represents the function of the <code>accessory</code> and consists of one or more <code>characteristic</code>s. A <code>service</code> may be a light service to control on/off and dimmer states of a device or a thermostat service to control temperature.</p>
+<h4 id="Characteristic"><a href="#Characteristic" class="headerlink" title="Characteristic"></a>Characteristic</h4><p>A <code>characteristic</code> is a property of a service such as current state of the on/off switch, the current temperature, or target mode of the device. A characteristic may be either read-only or read-write.</p>
+<p>!!!note  Note<br>While it is possible to develop custom services and characteristics for a device, Siri only recognizes Homekit’s predefined services and characteristics. HAP-Nodejs’s <a href="https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js" target="_blank" rel="noopener">supported types</a> provides a list of such services and characteristics recognizable by Homekit through Homebridge. Towards the bottom of this source code is a list of services along with their required and optional characteristics. As of this writing, there is a 1:1 parity between Homekit and HAP-nodejs.</p>
+<p>It is recommended to use a combination of pre-defined services and characteristics to mirror an accessory’s capability rather than developing custom service(s). This is done by linking services to a primary service. This will be expanded on later in this case-study.<br>!!!</p>
+<h3 id="Homekit-Services"><a href="#Homekit-Services" class="headerlink" title="Homekit Services"></a>Homekit Services</h3><p>There are a number of relevant services for this case study, but it does not mean we will use them all. There is potential for alternate mappings of Homekit services to the accessory (which can be made up of multiple devices as it is in this case)</p>
+<h5 id="HeaterCooler"><a href="#HeaterCooler" class="headerlink" title="HeaterCooler"></a>HeaterCooler</h5><hr>
+<h6 id="Required-Characteristics"><a href="#Required-Characteristics" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── Active (read, write)<br>├── CurrentHeaterCoolerState (read)<br>├── TargetHeaterCoolerState (read, write)<br>├── CurrentTemperature (read)</p>
+<h6 id="Optional-Characteristics"><a href="#Optional-Characteristics" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── LockPhysicalControls (read, write, notify)<br>├── Name (read, write, notify)<br>├── SwingMode (read, write, notify)<br>├── CoolingThresholdTemperature (read, write, notify)<br>├── HeatingThresholdTemperature (read, write, notify)<br>├── TemperatureDisplayUnits (read, write, notify)<br>├── RotationSpeed (read, write, notify)</p>
+<h5 id="Thermostat"><a href="#Thermostat" class="headerlink" title="Thermostat"></a>Thermostat</h5><hr>
+<h6 id="Required-Characteristics-1"><a href="#Required-Characteristics-1" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── CurrentHeatingCoolingState (read, notify)<br>├── TargetHeatingCoolingState  (read, write, notify)<br>├── CurrentTemperature (read, notify)<br>├── TargetTemperature  (read, write, notify)<br>├── TemperatureDisplayUnits  (read, write, notify)</p>
+<h6 id="Optional-Characteristics-1"><a href="#Optional-Characteristics-1" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── CurrentRelativeHumidity (read, notify)<br>├── TargetRelativeHumidity (read, write, notify)<br>├── CoolingThresholdTemperature (read, write, notify)<br>├── HeatingThresholdTemperature (read, write, notify)<br>├── Name (read, write, notify)</p>
+<h5 id="Fan"><a href="#Fan" class="headerlink" title="Fan"></a>Fan</h5><hr>
+<h6 id="Required-Characteristics-2"><a href="#Required-Characteristics-2" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── On (read, write, notify)</p>
+<h6 id="Optional-Characteristics-2"><a href="#Optional-Characteristics-2" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── RotationDirection (read, write, notify)<br>├── RotationSpeed  (read, write, notify)<br>├── Name (read, write, notify)</p>
+<h5 id="Fanv2"><a href="#Fanv2" class="headerlink" title="Fanv2"></a>Fanv2</h5><h6 id="Required-Characteristics-3"><a href="#Required-Characteristics-3" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── Active (read, write, notify)</p>
+<h6 id="Optional-Characteristics-3"><a href="#Optional-Characteristics-3" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── CurrentFanStatev (read, notify)<br>├── TargetFanState (read, write, notify)<br>├── LockPhysicalControls (r,w,n)<br>├── Name  (read, write, notify)<br>├── RotationDirection  (read, write, notify)<br>├── RotationSpeed  (read, write, notify)<br>├── SwingMode  (read, write, notify)</p>
+<hr>
+<h6 id="Required-Characteristics-4"><a href="#Required-Characteristics-4" class="headerlink" title="Required Characteristics"></a>Required Characteristics</h6><p>├── On (read, write, notify)</p>
+<h6 id="Optional-Characteristics-4"><a href="#Optional-Characteristics-4" class="headerlink" title="Optional Characteristics"></a>Optional Characteristics</h6><p>├── RotationDirection (read, write, notify)<br>├── RotationSpeed<br>├── Name</p>
+<h3 id="Controls-for-the-LG-LW1010ER-Air-Conditioner"><a href="#Controls-for-the-LG-LW1010ER-Air-Conditioner" class="headerlink" title="Controls for the LG LW1010ER Air Conditioner"></a>Controls for the LG LW1010ER Air Conditioner</h3><p>The end-user can control the following settings on the LG:</p>
+<hr>
+<h5 id="Power"><a href="#Power" class="headerlink" title="Power"></a>Power</h5><p>├── On/Off</p>
+<h5 id="Temperature-min-60°-max-86°-steps-1°-unit-F°"><a href="#Temperature-min-60°-max-86°-steps-1°-unit-F°" class="headerlink" title="Temperature (min: 60°, max: 86°, steps: 1°, unit F°)"></a>Temperature (min: 60°, max: 86°, steps: 1°, unit F°)</h5><p>├── Up<br>├── Down</p>
+<h5 id="Modes-select-by-cycling-through-the-modes"><a href="#Modes-select-by-cycling-through-the-modes" class="headerlink" title="Modes (select by cycling through the modes)"></a>Modes (select by cycling through the modes)</h5><p>├── 1. Cool<br>├── 2. Energy Saver<br>├── 3. Fan<br>├── 4. Dry</p>
+<h5 id="Timer-steps-1-hour-up-to-12-hours-to-shutdown"><a href="#Timer-steps-1-hour-up-to-12-hours-to-shutdown" class="headerlink" title="Timer (steps: 1 hour up to 12 hours) to shutdown"></a>Timer (steps: 1 hour up to 12 hours) to shutdown</h5><p>├── (increment by 1 hour)</p>
+<h5 id="Fan-Speed-select-by-cycling-through-the-fan-speeds"><a href="#Fan-Speed-select-by-cycling-through-the-fan-speeds" class="headerlink" title="Fan Speed (select by cycling through the fan speeds)*"></a>Fan Speed (select by cycling through the fan speeds)*</h5><p>├── 1. High<br>├── 2. Low<br>├── 3. Med</p>
+<hr>
+<p>*Odd ordering I know…</p>
+<h3 id="DHT-22-Temperature-and-Humidity-Sensor"><a href="#DHT-22-Temperature-and-Humidity-Sensor" class="headerlink" title="DHT-22 Temperature and Humidity Sensor"></a>DHT-22 Temperature and Humidity Sensor</h3><p>The sensor provides a reading of current conditions when polled for no less than every 2 seconds:<br>├── Temperature (-40 ℃ ~ 80 ℃ )<br>├── Humidity (0-100% Relative Humidity)</p>
+<p>Stay Tuned for Part II</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" data-id="cjmb1oel40004subtr3ke4bd8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/20/A-Stately-Examination/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          A Stately Examination
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/20/Regular-Expressions/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Regular Expressions</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/history-computer-science/">history computer-science</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/history-computer-science/" style="font-size: 10px;">history computer-science</a> <a href="/tags/homekit-javascript-IoT-raspberry-pi/" style="font-size: 10px;">homekit javascript IoT raspberry-pi</a> <a href="/tags/regex-regular-expressions/" style="font-size: 10px;">regex regular-expressions</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/09/20/A-Stately-Examination/">A Stately Examination</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/">Kitting Out With Homekit/HomeBridge</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Regular-Expressions/">Regular Expressions</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/A-Bug-s-Life/">A Bug&#39;s Life</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Ian Canino<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

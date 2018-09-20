@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Regular Expressions | The Mishaps of A Wandering Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Regular Expressions(An Irregular Impression) Let’s take a look at the following: 12^[a-zA-Z0-9.!#$%&amp;amp;&apos;*+/=?^_`&amp;#123;|&amp;#125;~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&amp;#123;0,61&amp;#125;[a-zA-Z0-9])?(?:\.[a-zA-Z0-">
+<meta name="keywords" content="regex regular-expressions">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Regular Expressions">
+<meta property="og:url" content="http://caninodev.github.io/2018/09/20/Regular-Expressions/index.html">
+<meta property="og:site_name" content="The Mishaps of A Wandering Developer">
+<meta property="og:description" content="Regular Expressions(An Irregular Impression) Let’s take a look at the following: 12^[a-zA-Z0-9.!#$%&amp;amp;&apos;*+/=?^_`&amp;#123;|&amp;#125;~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&amp;#123;0,61&amp;#125;[a-zA-Z0-9])?(?:\.[a-zA-Z0-">
+<meta property="og:locale" content="english">
+<meta property="og:image" content="https://media.giphy.com/media/GSB9ORFWdpiWA/giphy.gif">
+<meta property="og:image" content="https://imgs.xkcd.com/comics/regular_expressions.png">
+<meta property="og:image" content="http://www.userfriendly.org/cartoons/archives/99aug/uf000939.gif">
+<meta property="og:updated_time" content="2018-09-20T20:43:42.279Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Regular Expressions">
+<meta name="twitter:description" content="Regular Expressions(An Irregular Impression) Let’s take a look at the following: 12^[a-zA-Z0-9.!#$%&amp;amp;&apos;*+/=?^_`&amp;#123;|&amp;#125;~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&amp;#123;0,61&amp;#125;[a-zA-Z0-9])?(?:\.[a-zA-Z0-">
+<meta name="twitter:image" content="https://media.giphy.com/media/GSB9ORFWdpiWA/giphy.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="The Mishaps of A Wandering Developer" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">The Mishaps of A Wandering Developer</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">I am never lost, I am where I want to be even when I don&#39;t know it</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://caninodev.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Regular-Expressions" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/20/Regular-Expressions/" class="article-date">
+  <time datetime="2018-09-20T21:43:42.000Z" itemprop="datePublished">2018-09-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Regular Expressions
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Regular-Expressions"><a href="#Regular-Expressions" class="headerlink" title="Regular Expressions"></a>Regular Expressions</h1><h4 id="An-Irregular-Impression"><a href="#An-Irregular-Impression" class="headerlink" title="(An Irregular Impression)"></a>(An Irregular Impression)</h4><hr>
+<p>Let’s take a look at the following:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">^[a-zA-Z<span class="number">0</span>-<span class="number">9</span>.!<span class="comment">#$%&amp;'*+/=?^_`&#123;|&#125;~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&#123;0,61&#125;</span></span><br><span class="line">[a-zA-Z<span class="number">0</span>-<span class="number">9</span>])?(?<span class="symbol">:</span>\.[a-zA-Z<span class="number">0</span>-<span class="number">9</span>](?<span class="symbol">:</span>[a-zA-Z<span class="number">0</span>-<span class="number">9</span>-]&#123;<span class="number">0</span>,<span class="number">61</span>&#125;[a-zA-Z<span class="number">0</span>-<span class="number">9</span>])?)*$</span><br></pre></td></tr></table></figure>
+<p>This apparently nonsensical expression is actually quite powerful. It will validate or match most email addresses. Useful for validating a user’s input for when, by way of example, they want to subscribe to Bob Loblaw’s Law Blog.</p>
+<p><div align="center"><img src="https://media.giphy.com/media/GSB9ORFWdpiWA/giphy.gif"></div><div align="center"><sub>I highly recommend his services…</sub></div><br></p>
+<p>Chances are you have used an expression of this type. Recognize this?</p>
+<p><code>*.rb</code></p>
+<p>This will match all filenames with the filename extension <code>rb</code>.<br>Even our resident, the lugubrious Edward Norton, alluded to the use of this type of expression recently during his presentation. Here is a snippet of <code>inflection.rb</code>:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inflect.plural(<span class="regexp">/$/</span>, <span class="string">"s"</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/s$/i</span>, <span class="string">"s"</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/^(ax|test)is$/i</span>, <span class="string">'\1es'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(octop|vir)us$/i</span>, <span class="string">'\1i'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(octop|vir)i$/i</span>, <span class="string">'\1i'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(alias|status)$/i</span>, <span class="string">'\1es'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(bu)s$/i</span>, <span class="string">'\1ses'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/(buffal|tomat)o$/i</span>, <span class="string">'\1oes'</span>)</span><br><span class="line">inflect.plural(<span class="regexp">/([ti])um$/i</span>, <span class="string">'\1a'</span>)</span><br></pre></td></tr></table></figure>
+<p>In this particular example, the expressions are used to match prefixes with the appropriate pluralizing conjugations. These expressions are classified as regular expressions and are a special type of formal language.</p>
+<h2 id="Formal-Language"><a href="#Formal-Language" class="headerlink" title="Formal Language"></a>Formal Language</h2><h5 id="Casual-Babblings"><a href="#Casual-Babblings" class="headerlink" title="(Casual Babblings)"></a>(Casual Babblings)</h5><p>To first understand regular expressions, we must examine what a formal language is. Gaining this understanding will help clear away the apparent obfuscation of its syntax. According to wikipedia, a formal language is</p>
+<blockquote>
+<p>is a set of strings of symbols together with a set of rules that are specific to it.</p>
+</blockquote>
+<p>The following is such a language:</p>
+<p>(String of symbols)</p>
+<ul>
+<li>∅ denoting the set ∅.</li>
+<li>ε denoting the set containing only the “empty” string, which has no characters at all.</li>
+</ul>
+<hr>
+<h5 id="Wait-wait-wait…-Are-we-learning-greek"><a href="#Wait-wait-wait…-Are-we-learning-greek" class="headerlink" title="Wait wait wait… Are we learning greek?"></a>Wait wait wait… Are we learning greek?</h5><p>no..</p>
+<hr>
+<ul>
+<li>a in Σ denoting the set containing only the character a.</li>
+</ul>
+<p>(Operators)</p>
+<ul>
+<li>(concatenation) let <code>R</code> is “Did you hear about the restaurant on the moon?” and <code>S</code> is “Great food, no atmosphere”, thus <code>RS</code> is “A terrible joke”</li>
+<li>(alternation) let <code>R</code> be {“ab”, “c”} and let <code>S</code> ne {“ab”. “d”, “ef”}, thus <code>R | S</code> is {“ab”,”c”,”d”,”ef”}</li>
+<li>(Kleene star) <code>R*</code> is the smallest superset of sets that contains ε and contains all combinations of strings that can be concatanated. For example. {“ab”, “c”}* = {ε, “ab”, “c”, “abab”, “abc”, “cab”, “cc”, “ababab”, “abcab”, … }.</li>
+</ul>
+<p>If you would like to know more about Formal Languages, read up on <a href="https://en.wikipedia.org/wiki/Chomsky_hierarchy" target="_blank" rel="noopener">Chomsky hierarchy</a>. In fact, all programming langauges are considered to be a Formal Language. So you are already familiar with them. Regular expressions are no different except that its syntax consists of various symbols with no spaces.</p>
+<h2 id="Typical-Use-Cases"><a href="#Typical-Use-Cases" class="headerlink" title="Typical Use Cases"></a>Typical Use Cases</h2><h5 id="Including-Strange-and-Unusual-Ones"><a href="#Including-Strange-and-Unusual-Ones" class="headerlink" title="(Including Strange and Unusual Ones)"></a>(Including Strange and Unusual Ones)</h5><p><div align="center"><img src="https://imgs.xkcd.com/comics/regular_expressions.png"></div><br><br>Regular expressions (regex) are extremely powerful. They can be used to match telephone numbers in its various formats: (xxx)-yyy-zzzz, xxx-yyy-zzzz, xxx.yyy.zzzz. It can be used to find a substring ‘needle’ that is only seven words away from ‘haystack’ and is the first word of a sentence. Its used by the syntax highlighting engine of your editor. It’s even used in <a href="http://www.silentlycrashing.net/ezgestures/" target="_blank" rel="noopener">ezGestures</a> to interpret gestures that are represented as a series of UDLR strings. These are some of the more pragmatic use cases for regular expressions:</p>
+<ul>
+<li>Parsing and validating user input (password)</li>
+<li>Restructuring user input (date formatting, currency)</li>
+<li>Converting system logs for use with a plotting to graph performance</li>
+<li>Refactoring code via search and replace</li>
+<li>Getting a trailing folder from a path</li>
+</ul>
+<p>Another great thing about regex is that most languages, including Ruby, can interpret regular expressions. However check with your language reference manual to see if there are any variance in syntax.</p>
+<p>And without further ado, here is some of the syntax, keeping in mind that the operator acts on what comes before it:</p>
+<p>Character    | Legend | Example | Sample Match<br>|——|:—:|:—-:|—-:|<br>| <code>\d</code>    | Most engines: one digit from 0 to 9     | <code>file_\d\d</code> | <code>file_25</code>|<br>| <code>\w</code>    | Most engines: “word character”: ASCII letter, digit or underscore     | <code>\w-\w\w\w</code> | <code>A-b_1</code> |<br>|  <code>+</code> |    One or more    Version | <code>\w-\w+</code> |    <code>Version A-b1_1</code> |<br>| <code>.</code> |    Any character except line break | <code>a.c</code> | <code>abc</code> |<br>| <code>.</code>    | Any character except line break    | <code>.*</code> | <code>whatever, man.</code>|<br>| <code>\.</code> |    A period (special character: needs to be escaped by a \) |    <code>a\.c</code> | <code>a.c</code> |<br>| <code>{3}</code> | Exactly three times |    <code>\D{3}</code> |    <code>ABC</code>|<br>| <code>{2,4}</code> | Two to four times |    <code>\d{2,4}</code> |    <code>156</code>|<br>| <code>{3,}</code> | Three or more times |    <code>\w{3,}</code> |    <code>regex_tutorial</code>|<br>| <code>*</code> | Zero or more times |    <code>A*B*C*</code> |    <code>AABBBBBCCCC</code>|<br>| <code>?</code> | Once or none |    <code>plurals?</code> |    <code>plural</code>|<br>| <code>( … )</code> |    Capturing group    | <code>A(nt|pple)</code> |    <code>Apple</code> (captures “pple”)|<br>| <code>[ … ]</code> |    One of the characters in the brackets    | <code>[AEIOU]</code>    | <code>One uppercase vowel</code> |<br>| <code>[ … ]</code> |    One of the characters in the brackets |    <code>T[ao]p</code>    | <code>Tap</code> or <code>Top</code> |<br>| <code>-</code> |    Range indicator    | <code>[a-z]</code> |    <code>One lowercase letter</code>|<br>| <code>[ … ]</code> |    One of the characters in the brackets    | <code>[AB1-5w-z]</code> |    One of either: <code>A</code>,<code>B</code>,<code>1</code>,<code>2</code>,<code>3</code>,<code>4</code>,<code>5</code>,<code>w</code>,<code>x</code>,<code>y</code>,<code>z</code>|<br>| <code>[^x]</code>    | One character that is not x |    <code>[^a-z]{3}</code> |    <code>A1!</code> |</p>
+<p>Any many many more can be found in <a href="http://www.rexegg.com/regex-quickstart.html" target="_blank" rel="noopener">Regex Cheat Sheet</a></p>
+<h2 id="However…"><a href="#However…" class="headerlink" title="However…"></a>However…</h2><blockquote>
+<p>Some people, when confronted with a problem, think “I know, I’ll use regular expressions.” Now they have two problems. –Jamie Zawinski</p>
+</blockquote>
+<p>Even veteran developers who frequently use regex in their every day tasks for 10+ years still have to refer to cheat sheet. While regex’s are powerful, use them prudently. Sometimes there is an alternative tool that can get tbe job done faster than the time it takes to figure out the proper expression. The following are some use cases where regex’s are <em>not</em> recommended:</p>
+<ul>
+<li>Parsing HTML with regex</li>
+<li>Parsing natural langauges, for example obscenity/blacklisted words</li>
+<li>Despite the example in the beginning of this presentation, validating email addresses.</li>
+</ul>
+<h2 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h2><p><div align="center"><img src="http://www.userfriendly.org/cartoons/archives/99aug/uf000939.gif" width="60%"></div><div align="center"><sub>I prefer rg</sub></div></p>
+<ul>
+<li><a href="https://regex101.com/" target="_blank" rel="noopener">Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript</a></li>
+<li><a href="https://github.com/BurntSushi/ripgrep" target="_blank" rel="noopener">GitHub - BurntSushi/ripgrep: ripgrep recursively searches directories for a regex pattern</a></li>
+<li><a href="http://www.regexlib.com/" target="_blank" rel="noopener">Regular Expression Library</a></li>
+<li><a href="https://github.com/aloisdg/awesome-regex" target="_blank" rel="noopener">GitHub - aloisdg/awesome-regex: A curated collection of awesome Regex libraries, tools, frameworks and software</a></li>
+</ul>
+<h2 id="Bonus"><a href="#Bonus" class="headerlink" title="Bonus"></a>Bonus</h2><p>Guess what this matches:</p>
+  <figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]</span></span><br><span class="line"><span class="string">  )+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span></span><br><span class="line">  \r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(</span></span><br><span class="line"><span class="string">  ?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">  \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\0</span></span><br><span class="line"><span class="string">  31]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\</span></span><br><span class="line"><span class="string">  ](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+</span><br><span class="line">  (?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span></span><br><span class="line">  (?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z</span><br><span class="line">  <span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\</span></span><br><span class="line"><span class="string">  r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">   \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[</span></span><br><span class="line"><span class="string">   \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*</span></span><br><span class="line"><span class="string">  )(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)</span><br><span class="line">  *<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+</span></span><br><span class="line"><span class="string">  |\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r</span><br><span class="line">  \n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:</span></span><br><span class="line"><span class="string">  \r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t</span></span><br><span class="line"><span class="string">  ]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031</span></span><br><span class="line"><span class="string">  ]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](</span></span><br><span class="line"><span class="string">  ?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?</span><br><span class="line">  <span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?</span><br><span class="line">  <span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?</span></span><br><span class="line"><span class="params">  :(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?</span></span><br><span class="line"><span class="string">  [ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]</span></span><br><span class="line"><span class="string">  \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|</span></span><br><span class="line"><span class="string">  \\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;</span><br><span class="line">  @,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span></span><br><span class="line">  (?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t]</span><br><span class="line">  )*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\</span><br><span class="line">  <span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?</span></span><br><span class="line"><span class="string">  :[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[</span><br><span class="line">  \]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:[^()&lt;&gt;@,;:\\".\[\] \000-</span></span><br><span class="line"><span class="params">  \031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(</span></span><br><span class="line"><span class="string">  ?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;</span><br><span class="line">  <span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([</span></span><br><span class="line"><span class="string">  ^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span></span><br><span class="line">  .\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\</span></span><br><span class="line"><span class="params">  ]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\</span></span><br><span class="line"><span class="string">  [\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\</span></span><br><span class="line"><span class="string">  r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\]</span><br><span class="line">  \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]</span></span><br><span class="line"><span class="params">  |</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \0</span></span><br><span class="line"><span class="string">  00-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\</span></span><br><span class="line"><span class="string">  .|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,</span><br><span class="line">  ;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?</span><br><span class="line">  <span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*</span><br><span class="line">  (?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".</span></span><br><span class="line"><span class="string">  \[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[</span></span><br><span class="line"><span class="string">  ^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]</span><br><span class="line">  ]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>,\s*(</span><br><span class="line">  ?<span class="symbol">:</span>(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\</span><br><span class="line">  <span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(</span><br><span class="line">  ?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[</span></span><br><span class="line"><span class="string">  \["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t</span><br><span class="line">  ])*))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t</span></span><br><span class="line"><span class="string">  ])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?</span></span><br><span class="line"><span class="string">  :\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|</span></span><br><span class="line"><span class="params">  \Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*<span class="params">|(?:</span></span><br><span class="line"><span class="params">  [^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|</span>\Z<span class="params">|(?=[\["()&lt;&gt;@,;:\\".\[\</span></span><br><span class="line"><span class="params">  ]]))|</span><span class="string">"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)*\&lt;(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)</span><br><span class="line">  ?[ \t])*(?<span class="symbol">:</span>@(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span></span><br><span class="line">  ()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)</span></span><br><span class="line"><span class="string">  ?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;</span></span><br><span class="line"><span class="string">  @,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*(?<span class="symbol">:</span>,@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[</span><br><span class="line">   \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,</span><br><span class="line">  ;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t]</span></span><br><span class="line"><span class="string">  )*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z|</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\</span></span><br><span class="line"><span class="string">  "</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*)*<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)?</span><br><span class="line">  (?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".</span></span><br><span class="line"><span class="string">  \[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*)(?<span class="symbol">:</span>\.(?<span class="symbol">:</span>(?<span class="symbol">:</span></span><br><span class="line">  \r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\[</span></span><br><span class="line"><span class="string">  "</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|"</span>(?<span class="symbol">:</span>[^\<span class="string">"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])</span><br><span class="line">  *))*@(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*(?<span class="symbol">:</span>[^()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])</span></span><br><span class="line"><span class="string">  +|\Z|(?=[\["</span>()&lt;&gt;@,;<span class="symbol">:</span>\\<span class="string">".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\</span></span><br><span class="line"><span class="string">  .(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\"</span>.\[\] \<span class="number">000</span>-\<span class="number">031</span>]+(?<span class="symbol">:</span>(?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])+<span class="params">|\Z</span></span><br><span class="line"><span class="params">  |</span>(?=[\[<span class="string">"()&lt;&gt;@,;:\\"</span>.\[\]]))<span class="params">|\[([^\[\]\r\\]|</span>\\.)*\](?<span class="symbol">:</span>(?<span class="symbol">:</span>\r\n)?[ \t])*))*\&gt;(?<span class="symbol">:</span>(</span><br><span class="line">  ?<span class="symbol">:</span>\r\n)?[ \t])*))*)?;\s*)</span><br></pre></td></tr></table></figure>
+<p>  <div align="center"><sub><caption>Do you see the christmas tree?</caption></sub></div></p></figure><paste><p></p>
+</paste>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://caninodev.github.io/2018/09/20/Regular-Expressions/" data-id="cjmb1oel50005subtwmhv1lrf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Kitting Out With Homekit/HomeBridge
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/20/A-Bug-s-Life/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">A Bug&#39;s Life</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/history-computer-science/">history computer-science</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/homekit-javascript-IoT-raspberry-pi/">homekit javascript IoT raspberry-pi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/regex-regular-expressions/">regex regular-expressions</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/history-computer-science/" style="font-size: 10px;">history computer-science</a> <a href="/tags/homekit-javascript-IoT-raspberry-pi/" style="font-size: 10px;">homekit javascript IoT raspberry-pi</a> <a href="/tags/regex-regular-expressions/" style="font-size: 10px;">regex regular-expressions</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/09/20/A-Stately-Examination/">A Stately Examination</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Kitting-out-with-Homekit-HomeBridge/">Kitting Out With Homekit/HomeBridge</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/Regular-Expressions/">Regular Expressions</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/20/A-Bug-s-Life/">A Bug&#39;s Life</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Ian Canino<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
